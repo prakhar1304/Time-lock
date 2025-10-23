@@ -34,30 +34,30 @@
   --input: oklch(0.97 0.01 280);
   --ring: oklch(0.75 0.08 280);
 
-  /* Multi-color chart palette - brighter colors */
-  --chart-1: oklch(0.8 0.12 280); /* Brighter Purple */
-  --chart-2: oklch(0.82 0.12 240); /* Brighter Blue */
-  --chart-3: oklch(0.85 0.12 320); /* Brighter Pink */
-  --chart-4: oklch(0.8 0.12 160); /* Brighter Green/Mint */
-  --chart-5: oklch(0.78 0.12 200); /* Brighter Cyan */
+  /* Multi-color chart palette - vibrant normal colors */
+  --chart-1: oklch(0.65 0.18 280); /* Vibrant Purple */
+  --chart-2: oklch(0.68 0.18 240); /* Vibrant Blue */
+  --chart-3: oklch(0.72 0.18 320); /* Vibrant Pink */
+  --chart-4: oklch(0.65 0.18 160); /* Vibrant Green */
+  --chart-5: oklch(0.63 0.18 200); /* Vibrant Cyan */
 
-  /* Additional color variants - brighter */
-  --color-purple: oklch(0.8 0.12 280);
-  --color-blue: oklch(0.82 0.12 240);
-  --color-pink: oklch(0.85 0.12 320);
-  --color-green: oklch(0.8 0.12 160);
-  --color-cyan: oklch(0.78 0.12 200);
-  --color-orange: oklch(0.85 0.12 40);
+  /* Additional color variants - vibrant normal colors */
+  --color-purple: oklch(0.65 0.18 280);
+  --color-blue: oklch(0.68 0.18 240);
+  --color-pink: oklch(0.72 0.18 320);
+  --color-green: oklch(0.65 0.18 160);
+  --color-cyan: oklch(0.63 0.18 200);
+  --color-orange: oklch(0.72 0.18 40);
 
   --radius: 0.75rem; /* Slightly more rounded corners like in the image */
   --sidebar: oklch(0.99 0.01 280); /* Very light sidebar background with subtle purple tint */
   --sidebar-foreground: oklch(0.25 0 0); /* Darker text on light sidebar */
-  --sidebar-primary: oklch(0.8 0.12 280); /* Brighter purple highlight for active items */
+  --sidebar-primary: oklch(0.65 0.18 280); /* Vibrant purple highlight for active items */
   --sidebar-primary-foreground: oklch(1 0 0); /* White text on active items */
   --sidebar-accent: oklch(0.96 0.02 280); /* Light hover state with purple tint */
   --sidebar-accent-foreground: oklch(0.25 0 0); /* Dark text on hover */
   --sidebar-border: oklch(0.94 0.01 280); /* Light border with purple tint */
-  --sidebar-ring: oklch(0.8 0.12 280); /* Brighter purple ring color */
+  --sidebar-ring: oklch(0.65 0.18 280); /* Vibrant purple ring color */
 }
 
 .dark {
@@ -117,11 +117,11 @@
 .border-cyan-pastel { border-color: var(--color-cyan); }
 .border-orange-pastel { border-color: var(--color-orange); }
 
-/* Gradient backgrounds for cards - brighter colors */
-.gradient-purple { background: linear-gradient(135deg, var(--color-purple), oklch(0.85 0.1 280)); }
-.gradient-blue { background: linear-gradient(135deg, var(--color-blue), oklch(0.87 0.1 240)); }
-.gradient-pink { background: linear-gradient(135deg, var(--color-pink), oklch(0.9 0.1 320)); }
-.gradient-green { background: linear-gradient(135deg, var(--color-green), oklch(0.85 0.1 160)); }
+/* Gradient backgrounds for cards - vibrant colors */
+.gradient-purple { background: linear-gradient(135deg, var(--color-purple), oklch(0.7 0.15 280)); }
+.gradient-blue { background: linear-gradient(135deg, var(--color-blue), oklch(0.73 0.15 240)); }
+.gradient-pink { background: linear-gradient(135deg, var(--color-pink), oklch(0.77 0.15 320)); }
+.gradient-green { background: linear-gradient(135deg, var(--color-green), oklch(0.7 0.15 160)); }
 
 /* Glass morphism effect like in the image */
 .glass-card {

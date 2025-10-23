@@ -158,7 +158,6 @@ export function TodoList() {
                 <Checkbox
                   checked={todo.completed}
                   onCheckedChange={() => toggleTodoComplete(todo.id)}
-                  className="data-[state=checked]:bg-purple-pastel"
                 />
                 
                 <div className="flex-1 min-w-0">
@@ -212,7 +211,6 @@ export function TodoList() {
                 <Checkbox
                   checked={todo.completed}
                   onCheckedChange={() => toggleTodoComplete(todo.id)}
-                  className="data-[state=checked]:bg-purple-pastel"
                 />
                 
                 <div className="flex-1 min-w-0">
