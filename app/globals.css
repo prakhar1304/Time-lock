@@ -12,20 +12,20 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.2 0 0);
 
-  /* Primary: Light Purple/Lavender (from Total applicants card) */
-  --primary: oklch(0.75 0.08 280);
+  /* Primary: Brighter Purple/Lavender */
+  --primary: oklch(0.8 0.12 280);
   --primary-foreground: oklch(0.2 0 0);
 
-  /* Secondary: Light Blue (from Interviewed card) */
-  --secondary: oklch(0.78 0.08 240);
+  /* Secondary: Brighter Blue */
+  --secondary: oklch(0.82 0.12 240);
   --secondary-foreground: oklch(0.2 0 0);
 
   /* Muted: Light gray */
   --muted: oklch(0.95 0.01 280);
   --muted-foreground: oklch(0.5 0 0);
 
-  /* Accent: Light Pink/Rose (from Job offers card) */
-  --accent: oklch(0.82 0.08 320);
+  /* Accent: Brighter Pink/Rose */
+  --accent: oklch(0.85 0.12 320);
   --accent-foreground: oklch(0.2 0 0);
 
   --destructive: oklch(0.577 0.245 27.325);
@@ -34,30 +34,30 @@
   --input: oklch(0.97 0.01 280);
   --ring: oklch(0.75 0.08 280);
 
-  /* Multi-color chart palette matching the image */
-  --chart-1: oklch(0.75 0.08 280); /* Light Purple */
-  --chart-2: oklch(0.78 0.08 240); /* Light Blue */
-  --chart-3: oklch(0.82 0.08 320); /* Light Pink */
-  --chart-4: oklch(0.76 0.08 160); /* Light Green/Mint */
-  --chart-5: oklch(0.74 0.08 200); /* Light Cyan */
+  /* Multi-color chart palette - brighter colors */
+  --chart-1: oklch(0.8 0.12 280); /* Brighter Purple */
+  --chart-2: oklch(0.82 0.12 240); /* Brighter Blue */
+  --chart-3: oklch(0.85 0.12 320); /* Brighter Pink */
+  --chart-4: oklch(0.8 0.12 160); /* Brighter Green/Mint */
+  --chart-5: oklch(0.78 0.12 200); /* Brighter Cyan */
 
-  /* Additional color variants for different UI elements */
-  --color-purple: oklch(0.75 0.08 280);
-  --color-blue: oklch(0.78 0.08 240);
-  --color-pink: oklch(0.82 0.08 320);
-  --color-green: oklch(0.76 0.08 160);
-  --color-cyan: oklch(0.74 0.08 200);
-  --color-orange: oklch(0.8 0.08 40);
+  /* Additional color variants - brighter */
+  --color-purple: oklch(0.8 0.12 280);
+  --color-blue: oklch(0.82 0.12 240);
+  --color-pink: oklch(0.85 0.12 320);
+  --color-green: oklch(0.8 0.12 160);
+  --color-cyan: oklch(0.78 0.12 200);
+  --color-orange: oklch(0.85 0.12 40);
 
   --radius: 0.75rem; /* Slightly more rounded corners like in the image */
-  --sidebar: oklch(0.98 0.005 280); /* Very light sidebar background */
-  --sidebar-foreground: oklch(0.3 0 0); /* Dark text on light sidebar */
-  --sidebar-primary: oklch(0.75 0.08 280); /* Purple highlight for active items */
+  --sidebar: oklch(0.99 0.01 280); /* Very light sidebar background with subtle purple tint */
+  --sidebar-foreground: oklch(0.25 0 0); /* Darker text on light sidebar */
+  --sidebar-primary: oklch(0.8 0.12 280); /* Brighter purple highlight for active items */
   --sidebar-primary-foreground: oklch(1 0 0); /* White text on active items */
-  --sidebar-accent: oklch(0.95 0.01 280); /* Light hover state */
-  --sidebar-accent-foreground: oklch(0.3 0 0); /* Dark text on hover */
-  --sidebar-border: oklch(0.92 0.01 280); /* Light border */
-  --sidebar-ring: oklch(0.75 0.08 280); /* Purple ring color */
+  --sidebar-accent: oklch(0.96 0.02 280); /* Light hover state with purple tint */
+  --sidebar-accent-foreground: oklch(0.25 0 0); /* Dark text on hover */
+  --sidebar-border: oklch(0.94 0.01 280); /* Light border with purple tint */
+  --sidebar-ring: oklch(0.8 0.12 280); /* Brighter purple ring color */
 }
 
 .dark {
@@ -117,11 +117,11 @@
 .border-cyan-pastel { border-color: var(--color-cyan); }
 .border-orange-pastel { border-color: var(--color-orange); }
 
-/* Gradient backgrounds for cards like in the image */
-.gradient-purple { background: linear-gradient(135deg, var(--color-purple), oklch(0.8 0.06 280)); }
-.gradient-blue { background: linear-gradient(135deg, var(--color-blue), oklch(0.82 0.06 240)); }
-.gradient-pink { background: linear-gradient(135deg, var(--color-pink), oklch(0.85 0.06 320)); }
-.gradient-green { background: linear-gradient(135deg, var(--color-green), oklch(0.8 0.06 160)); }
+/* Gradient backgrounds for cards - brighter colors */
+.gradient-purple { background: linear-gradient(135deg, var(--color-purple), oklch(0.85 0.1 280)); }
+.gradient-blue { background: linear-gradient(135deg, var(--color-blue), oklch(0.87 0.1 240)); }
+.gradient-pink { background: linear-gradient(135deg, var(--color-pink), oklch(0.9 0.1 320)); }
+.gradient-green { background: linear-gradient(135deg, var(--color-green), oklch(0.85 0.1 160)); }
 
 /* Glass morphism effect like in the image */
 .glass-card {
@@ -133,13 +133,13 @@
 
 /* Floating sidebar effect */
 .floating-sidebar {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   box-shadow: 
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04),
-    0 0 0 1px rgba(255, 255, 255, 0.05);
+    0 20px 25px -5px rgba(0, 0, 0, 0.08),
+    0 10px 10px -5px rgba(0, 0, 0, 0.03),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease-in-out;
 }
 
@@ -168,6 +168,48 @@
   white-space: nowrap;
   z-index: 1000;
   pointer-events: none;
+}
+
+/* Range slider styling - brighter colors */
+.slider {
+  background: linear-gradient(to right, var(--color-purple) 0%, var(--color-purple) var(--value, 50%), var(--muted) var(--value, 50%), var(--muted) 100%);
+}
+
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: var(--color-purple);
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.slider::-moz-range-thumb {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: var(--color-purple);
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive improvements for settings */
+@media (max-width: 768px) {
+  .settings-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+  
+  .settings-card {
+    padding: 1rem !important;
+  }
+  
+  .settings-spacing {
+    margin-bottom: 1.5rem !important;
+  }
 }
 
 @theme inline {

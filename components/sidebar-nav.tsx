@@ -60,9 +60,9 @@ export function SidebarNav({ children }: SidebarNavProps) {
   }
 
   const SidebarContent = () => (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col ">
       {/* Logo */}
-      <div className={`flex h-20 items-center border-b border-sidebar-border px-6 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+      <div className={`flex h-20 items-center border-b border-sidebar-border px-6 ${isCollapsed ? 'justify-center' : 'justify-between'} `}>
         {!isCollapsed && (
           <Link href="/" className="flex items-center gap-3">
             <Image
@@ -102,7 +102,7 @@ export function SidebarNav({ children }: SidebarNavProps) {
       </div>
 
       {/* Navigation */}
-      <nav className={`flex-1 space-y-1 p-6 ${isCollapsed ? 'px-3' : ''}`}>
+      <nav className={`flex-1 space-y-1 p-6 ${isCollapsed ? 'px-5 pr-10' : ''}`}>
         {navigationItems.map((item) => {
           const isActive = pathname === item.href
           return (
@@ -113,7 +113,7 @@ export function SidebarNav({ children }: SidebarNavProps) {
                 isActive
                   ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-md"
                   : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-sm"
-              } ${isCollapsed ? 'justify-center px-2 sidebar-tooltip' : ''}`}
+              } ${isCollapsed ? 'justify-center px-3 sidebar-tooltip' : ''}`}
               title={isCollapsed ? item.name : undefined}
             >
               <item.icon className="h-5 w-5 shrink-0" />
@@ -124,13 +124,13 @@ export function SidebarNav({ children }: SidebarNavProps) {
       </nav>
 
       {/* User Menu */}
-      <div className={`border-t border-sidebar-border p-6 ${isCollapsed ? 'px-3' : ''}`}>
+      <div className={`border-t border-sidebar-border p-6 ${isCollapsed ? 'px-4' : ''}`}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
               className={`flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-sm transition-all duration-200 ${
-                isCollapsed ? 'w-full justify-center px-2 sidebar-tooltip' : 'w-full'
+                isCollapsed ? 'w-full justify-center px-3 sidebar-tooltip' : 'w-full'
               }`}
               title={isCollapsed ? `${user?.name || "User"} - ${user?.email}` : undefined}
             >

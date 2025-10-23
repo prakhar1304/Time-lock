@@ -174,15 +174,16 @@ export function UserProfileSettings() {
           </CardTitle>
           <CardDescription>Configure your AI assistant preferences</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="model">Preferred AI Model</Label>
+        <CardContent className="space-y-6">
+          {/* First Row - Model and Personality */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <Label htmlFor="model" className="text-sm font-medium">Preferred AI Model</Label>
               <Select 
                 value={profile.preferredModel} 
                 onValueChange={(value: any) => setProfile({...profile, preferredModel: value})}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -193,8 +194,8 @@ export function UserProfileSettings() {
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="personality">AI Personality</Label>
+            <div className="space-y-3">
+              <Label htmlFor="personality" className="text-sm font-medium">AI Personality</Label>
               <Select 
                 value={profile.aiSettings.systemPersonality} 
                 onValueChange={(value: any) => setProfile({
@@ -202,7 +203,7 @@ export function UserProfileSettings() {
                   aiSettings: {...profile.aiSettings, systemPersonality: value}
                 })}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -215,32 +216,39 @@ export function UserProfileSettings() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="temperature">Creativity Level</Label>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground">Conservative</span>
-                <input
-                  type="range"
-                  min="0.1"
-                  max="1.0"
-                  step="0.1"
-                  value={profile.aiSettings.temperature}
-                  onChange={(e) => setProfile({
-                    ...profile,
-                    aiSettings: {...profile.aiSettings, temperature: parseFloat(e.target.value)}
-                  })}
-                  className="flex-1"
-                />
-                <span className="text-sm text-muted-foreground">Creative</span>
+          {/* Second Row - Creativity and Response Length */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <Label htmlFor="temperature" className="text-sm font-medium">Creativity Level</Label>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>Conservative</span>
+                  <span>Creative</span>
+                </div>
+                <div className="relative">
+                  <input
+                    type="range"
+                    min="0.1"
+                    max="1.0"
+                    step="0.1"
+                    value={profile.aiSettings.temperature}
+                    onChange={(e) => setProfile({
+                      ...profile,
+                      aiSettings: {...profile.aiSettings, temperature: parseFloat(e.target.value)}
+                    })}
+                    className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer slider"
+                  />
+                </div>
+                <div className="flex justify-center">
+                  <span className="text-sm font-medium text-purple-pastel">
+                    Current: {profile.aiSettings.temperature}
+                  </span>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Current: {profile.aiSettings.temperature}
-              </p>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="maxTokens">Response Length</Label>
+            <div className="space-y-3">
+              <Label htmlFor="maxTokens" className="text-sm font-medium">Response Length</Label>
               <Select 
                 value={profile.aiSettings.maxTokens.toString()} 
                 onValueChange={(value) => setProfile({
@@ -248,7 +256,7 @@ export function UserProfileSettings() {
                   aiSettings: {...profile.aiSettings, maxTokens: parseInt(value)}
                 })}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -272,9 +280,9 @@ export function UserProfileSettings() {
           <CardDescription>Configure your Gemini API key for enhanced AI features</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="apiKey">Gemini API Key</Label>
-            <div className="flex gap-2">
+          <div className="space-y-3">
+            <Label htmlFor="apiKey" className="text-sm font-medium">Gemini API Key</Label>
+            <div className="flex flex-col sm:flex-row gap-2">
               <Input
                 id="apiKey"
                 type={apiKeyVisible ? "text" : "password"}
@@ -283,21 +291,25 @@ export function UserProfileSettings() {
                 onChange={(e) => setProfile({...profile, geminiApiKey: e.target.value})}
                 className="flex-1"
               />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setApiKeyVisible(!apiKeyVisible)}
-              >
-                {apiKeyVisible ? 'Hide' : 'Show'}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={testApiKey}
-                disabled={!profile.geminiApiKey}
-              >
-                Test
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setApiKeyVisible(!apiKeyVisible)}
+                  className="flex-1 sm:flex-none"
+                >
+                  {apiKeyVisible ? 'Hide' : 'Show'}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={testApiKey}
+                  disabled={!profile.geminiApiKey}
+                  className="flex-1 sm:flex-none"
+                >
+                  Test
+                </Button>
+              </div>
             </div>
             <p className="text-xs text-muted-foreground">
               Get your free API key from Google AI Studio
@@ -316,14 +328,15 @@ export function UserProfileSettings() {
           <CardDescription>Set your long-term objectives for better AI assistance</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Input
               placeholder="Add a new goal..."
               value={newGoal}
               onChange={(e) => setNewGoal(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && addGoal()}
+              className="flex-1"
             />
-            <Button onClick={addGoal} disabled={!newGoal.trim()}>
+            <Button onClick={addGoal} disabled={!newGoal.trim()} className="sm:w-auto w-full">
               Add Goal
             </Button>
           </div>
@@ -356,9 +369,9 @@ export function UserProfileSettings() {
           <CardDescription>Set your preferred working hours for better task scheduling</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="startTime">Start Time</Label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-3">
+              <Label htmlFor="startTime" className="text-sm font-medium">Start Time</Label>
               <Input
                 id="startTime"
                 type="time"
@@ -370,10 +383,11 @@ export function UserProfileSettings() {
                     workingHours: {...profile.preferences.workingHours, start: e.target.value}
                   }
                 })}
+                className="w-full"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="endTime">End Time</Label>
+            <div className="space-y-3">
+              <Label htmlFor="endTime" className="text-sm font-medium">End Time</Label>
               <Input
                 id="endTime"
                 type="time"
@@ -385,6 +399,7 @@ export function UserProfileSettings() {
                     workingHours: {...profile.preferences.workingHours, end: e.target.value}
                   }
                 })}
+                className="w-full"
               />
             </div>
           </div>
@@ -402,9 +417,9 @@ export function UserProfileSettings() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <Label>Task Reminders</Label>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="space-y-1">
+                <Label className="text-sm font-medium">Task Reminders</Label>
                 <p className="text-sm text-muted-foreground">Get reminded about upcoming tasks</p>
               </div>
               <Switch
@@ -419,14 +434,15 @@ export function UserProfileSettings() {
                     }
                   }
                 })}
+                className="sm:ml-auto"
               />
             </div>
             
             <Separator />
             
-            <div className="flex items-center justify-between">
-              <div>
-                <Label>Goal Progress Updates</Label>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="space-y-1">
+                <Label className="text-sm font-medium">Goal Progress Updates</Label>
                 <p className="text-sm text-muted-foreground">Receive updates on your goal progress</p>
               </div>
               <Switch
@@ -441,14 +457,15 @@ export function UserProfileSettings() {
                     }
                   }
                 })}
+                className="sm:ml-auto"
               />
             </div>
             
             <Separator />
             
-            <div className="flex items-center justify-between">
-              <div>
-                <Label>AI Insights</Label>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="space-y-1">
+                <Label className="text-sm font-medium">AI Insights</Label>
                 <p className="text-sm text-muted-foreground">Get productivity insights and suggestions</p>
               </div>
               <Switch
@@ -463,6 +480,7 @@ export function UserProfileSettings() {
                     }
                   }
                 })}
+                className="sm:ml-auto"
               />
             </div>
           </div>
