@@ -2,55 +2,66 @@
 
 import type React from "react"
 import { createContext, useContext, useState, useEffect } from "react"
-
-interface User {
-  id: string
-  email: string
-  name: string
-}
+import type { UserSession } from "@/lib/user-types"
 
 interface AuthContextType {
-  user: User | null
+  user: UserSession | null
   isLoading: boolean
   login: (email: string, password: string) => Promise<void>
   signup: (email: string, password: string, name: string) => Promise<void>
-  logout: () => void
+  logout: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<UserSession | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Load user from localStorage on mount
+  // Verify user token on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem("user")
-    if (storedUser) {
+    const verifyUser = async () => {
       try {
-        setUser(JSON.parse(storedUser))
+        const response = await fetch('/api/auth/verify', {
+          method: 'GET',
+          credentials: 'include'
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          if (data.success) {
+            setUser(data.user)
+          }
+        }
       } catch (error) {
-        console.error("Failed to parse stored user:", error)
-        localStorage.removeItem("user")
+        console.error("Failed to verify user:", error)
+      } finally {
+        setIsLoading(false)
       }
     }
-    setIsLoading(false)
+
+    verifyUser()
   }, [])
 
   const login = async (email: string, password: string) => {
     setIsLoading(true)
     try {
-      // Simulate API call - in production, this would call your backend
-      const storedUsers = JSON.parse(localStorage.getItem("users") || "[]")
-      const foundUser = storedUsers.find((u: any) => u.email === email && u.password === password)
+      const response = await fetch('/api/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ email, password }),
+      })
 
-      if (!foundUser) {
-        throw new Error("Invalid email or password")
+      const data = await response.json()
+
+      if (data.success) {
+        setUser(data.user)
+      } else {
+        throw new Error(data.error || "Login failed")
       }
-
-      const userData = { id: foundUser.id, email: foundUser.email, name: foundUser.name }
-      setUser(userData)
-      localStorage.setItem("user", JSON.stringify(userData))
     } finally {
       setIsLoading(false)
     }
@@ -59,34 +70,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signup = async (email: string, password: string, name: string) => {
     setIsLoading(true)
     try {
-      // Simulate API call - in production, this would call your backend
-      const storedUsers = JSON.parse(localStorage.getItem("users") || "[]")
+      const response = await fetch('/api/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ email, password, name }),
+      })
 
-      if (storedUsers.some((u: any) => u.email === email)) {
-        throw new Error("Email already exists")
+      const data = await response.json()
+
+      if (data.success) {
+        setUser(data.user)
+      } else {
+        throw new Error(data.error || "Signup failed")
       }
-
-      const newUser = {
-        id: Date.now().toString(),
-        email,
-        password, // In production, this should be hashed on the backend
-        name,
-      }
-
-      storedUsers.push(newUser)
-      localStorage.setItem("users", JSON.stringify(storedUsers))
-
-      const userData = { id: newUser.id, email: newUser.email, name: newUser.name }
-      setUser(userData)
-      localStorage.setItem("user", JSON.stringify(userData))
     } finally {
       setIsLoading(false)
     }
   }
 
-  const logout = () => {
-    setUser(null)
-    localStorage.removeItem("user")
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/verify', {
+        method: 'DELETE',
+        credentials: 'include'
+      })
+    } catch (error) {
+      console.error("Logout error:", error)
+    } finally {
+      setUser(null)
+    }
   }
 
   return <AuthContext.Provider value={{ user, isLoading, login, signup, logout }}>{children}</AuthContext.Provider>

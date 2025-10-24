@@ -16,6 +16,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Sparkles, Send, Loader2, Brain, Target, Clock } from "lucide-react"
+import ReactMarkdown from 'react-markdown'
 
 interface Message {
   id: string
@@ -219,7 +220,15 @@ export function AIAssistant() {
                     : "bg-muted text-muted-foreground border border-border"
                 }`}
               >
-                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                {message.role === "assistant" ? (
+                  <div className="text-sm prose prose-sm max-w-none">
+                    <ReactMarkdown>
+                      {message.content}
+                    </ReactMarkdown>
+                  </div>
+                ) : (
+                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                )}
                 {message.contextUsed && getContextBadges(message.contextUsed)}
                 <p className="text-xs opacity-70 mt-1">
                   {message.timestamp.toLocaleTimeString()}

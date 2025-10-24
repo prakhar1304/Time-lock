@@ -1,8 +1,10 @@
-import { generateText } from "ai"
+import { GoogleGenAI } from '@google/genai'
 import { getDatabase } from '@/lib/mongodb'
 import { ObjectId } from 'mongodb'
 import { buildSystemPrompt, extractTaskSuggestions, generateContextSummary } from '@/lib/ai-context'
 import type { UserProfile, AIMemory } from '@/lib/ai-types'
+
+export const runtime = 'nodejs'
 
 // Simple encryption/decryption for API keys
 function decryptApiKey(encryptedKey: string): string {
@@ -63,28 +65,46 @@ export async function POST(request: Request) {
     // Build enhanced system prompt
     const systemPrompt = buildSystemPrompt(context)
 
-    // Determine which model to use
-    let model = 'openai/gpt-4o-mini' // Default fallback
-    let apiKey = process.env.OPENAI_API_KEY
+    // Determine which Gemini model to use
+    let modelName = ''
+    let apiKey = ''
 
-    if (userProfile.preferredModel === 'gemini-flash-2.0' && userProfile.geminiApiKey) {
+    if (userProfile.geminiApiKey) {
       try {
         const decryptedKey = decryptApiKey(userProfile.geminiApiKey)
-        model = 'google/gemini-flash-2.0'
+        
+        // Map user's preferred model to the correct Google model identifier
+        switch (userProfile.preferredModel) {
+          case 'gemini-pro':
+            modelName = 'gemini-1.5-pro'
+            break
+          case 'gemini-pro-vision':
+            modelName = 'gemini-1.5-pro'
+            break
+          case 'gemini-flash-2.0':
+          default:
+            modelName = 'gemini-2.5-flash'
+            break
+        }
+        
         apiKey = decryptedKey
       } catch (error) {
-        console.warn('Failed to decrypt Gemini API key, falling back to OpenAI')
+        console.error('Failed to decrypt API key:', error)
+        return Response.json({ error: 'Invalid API key configuration' }, { status: 400 })
       }
+    } else {
+      return Response.json({ error: 'Gemini API key not configured' }, { status: 400 })
     }
 
-    const { text } = await generateText({
-      model,
-      apiKey,
-      system: systemPrompt,
-      prompt: message,
-      temperature: userProfile.aiSettings?.temperature || 0.7,
-      maxTokens: userProfile.aiSettings?.maxTokens || 1000,
+    // Use the official Google GenAI SDK
+    const ai = new GoogleGenAI({ apiKey })
+    
+    const response = await ai.models.generateContent({
+      model: modelName,
+      contents: `${systemPrompt}\n\nUser: ${message}`,
     })
+
+    const text = response.text
 
     // Save conversation to memory
     const conversationMessage = {
@@ -135,7 +155,7 @@ export async function POST(request: Request) {
       contextUsed: {
         userGoals: userProfile.userGoals,
         workingHours: userProfile.preferences.workingHours,
-        modelUsed: model
+        modelUsed: modelName
       }
     })
   } catch (error) {

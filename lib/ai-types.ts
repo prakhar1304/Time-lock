@@ -4,7 +4,7 @@ export interface UserProfile {
   _id?: ObjectId
   userId: string
   geminiApiKey?: string // Encrypted
-  preferredModel: 'gemini-flash-2.0' | 'gpt-4o-mini' | 'gemini-pro'
+  preferredModel: 'gemini-2.5-flash' | 'gemini-1.5-pro' | 'gemini-1.5-pro-vision'
   aiSettings: {
     temperature: number // 0.1-1.0
     maxTokens: number

@@ -6,7 +6,7 @@ import "./globals.css"
 import { AuthProvider } from "@/lib/auth-context"
 import { TaskProvider } from "@/lib/task-context"
 import { AIAssistant } from "@/components/ai-assistant"
-import { SidebarNav } from "@/components/sidebar-nav"
+import { ConditionalLayout } from "@/components/conditional-layout"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
@@ -27,9 +27,9 @@ export default function RootLayout({
       <body className={`font-sans antialiased`}>
         <AuthProvider>
           <TaskProvider>
-            <SidebarNav>
+            <ConditionalLayout>
               {children}
-            </SidebarNav>
+            </ConditionalLayout>
             <AIAssistant />
           </TaskProvider>
         </AuthProvider>

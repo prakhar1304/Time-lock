@@ -17,7 +17,7 @@ import { toast } from "sonner"
 interface UserProfile {
   userId: string
   geminiApiKey?: string
-  preferredModel: 'gemini-flash-2.0' | 'gpt-4o-mini' | 'gemini-pro'
+  preferredModel: 'gemini-2.5-flash' | 'gemini-1.5-pro' | 'gemini-1.5-pro-vision'
   aiSettings: {
     temperature: number
     maxTokens: number
@@ -52,7 +52,9 @@ export function UserProfileSettings() {
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch(`/api/user/profile?userId=${user?.id}`)
+      const response = await fetch('/api/user/profile', {
+        credentials: 'include'
+      })
       if (response.ok) {
         const data = await response.json()
         setProfile(data)
@@ -68,22 +70,41 @@ export function UserProfileSettings() {
   const saveProfile = async () => {
     if (!profile || !user) return
 
+    // Validate API key before saving
+    if (profile.geminiApiKey && profile.geminiApiKey !== '[CONFIGURED]') {
+      // Check if it looks like a valid API key (basic validation)
+      if (profile.geminiApiKey.length < 20) {
+        toast.error('API key appears to be too short. Please check your input.')
+        return
+      }
+      
+      // Check if it contains error messages
+      if (profile.geminiApiKey.includes('error') || profile.geminiApiKey.includes('Failed')) {
+        toast.error('API key appears to be corrupted. Please re-enter your API key.')
+        return
+      }
+    }
+
     setIsSaving(true)
     try {
       const response = await fetch('/api/user/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...profile, userId: user.id })
+        credentials: 'include',
+        body: JSON.stringify(profile)
       })
 
       if (response.ok) {
         toast.success('Profile saved successfully!')
+        // Refresh profile to get updated data
+        await fetchProfile()
       } else {
-        throw new Error('Failed to save profile')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to save profile')
       }
     } catch (error) {
       console.error('Error saving profile:', error)
-      toast.error('Failed to save profile')
+      toast.error(error instanceof Error ? error.message : 'Failed to save profile')
     } finally {
       setIsSaving(false)
     }
@@ -108,9 +129,25 @@ export function UserProfileSettings() {
     }
   }
 
+  const clearApiKey = () => {
+    if (profile) {
+      setProfile({
+        ...profile,
+        geminiApiKey: ''
+      })
+      toast.success('API key cleared. Please enter a new one.')
+    }
+  }
+
   const testApiKey = async () => {
     if (!profile?.geminiApiKey) {
       toast.error('Please enter a Gemini API key first')
+      return
+    }
+
+    // Check if the API key looks like an error message
+    if (profile.geminiApiKey.includes('error') || profile.geminiApiKey.includes('Failed')) {
+      toast.error('API key appears to be corrupted. Please re-enter your API key.')
       return
     }
 
@@ -121,12 +158,15 @@ export function UserProfileSettings() {
         body: JSON.stringify({ apiKey: profile.geminiApiKey })
       })
 
-      if (response.ok) {
+      const data = await response.json()
+      
+      if (response.ok && data.success) {
         toast.success('API key is valid!')
       } else {
-        toast.error('API key is invalid')
+        toast.error(data.message || 'API key is invalid')
       }
     } catch (error) {
+      console.error('API key test error:', error)
       toast.error('Failed to test API key')
     }
   }
@@ -187,9 +227,9 @@ export function UserProfileSettings() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="gemini-flash-2.0">Gemini Flash 2.0 (Recommended)</SelectItem>
-                  <SelectItem value="gpt-4o-mini">GPT-4o Mini</SelectItem>
-                  <SelectItem value="gemini-pro">Gemini Pro</SelectItem>
+                  <SelectItem value="gemini-2.5-flash">Gemini 2.5 Flash (Recommended)</SelectItem>
+                  <SelectItem value="gemini-1.5-pro">Gemini 1.5 Pro</SelectItem>
+                  <SelectItem value="gemini-1.5-pro-vision">Gemini 1.5 Pro Vision</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -299,6 +339,15 @@ export function UserProfileSettings() {
                   className="flex-1 sm:flex-none"
                 >
                   {apiKeyVisible ? 'Hide' : 'Show'}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={clearApiKey}
+                  disabled={!profile.geminiApiKey || profile.geminiApiKey === '[CONFIGURED]'}
+                  className="flex-1 sm:flex-none"
+                >
+                  Clear
                 </Button>
                 <Button
                   variant="outline"

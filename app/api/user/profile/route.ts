@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getDatabase } from '@/lib/mongodb'
 import { ObjectId } from 'mongodb'
 import type { UserProfile } from '@/lib/ai-types'
+import { getUserFromRequest } from '@/lib/auth-helpers'
+
+export const runtime = 'nodejs'
 
 // Simple encryption/decryption for API keys (in production, use proper encryption)
 function encryptApiKey(apiKey: string): string {
@@ -14,20 +17,19 @@ function decryptApiKey(encryptedKey: string): string {
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId')
+    const user = getUserFromRequest(request)
     
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
+    if (!user) {
+      return NextResponse.json({ error: 'User not authenticated' }, { status: 401 })
     }
 
     const db = await getDatabase()
-    const profile = await db.collection('user_profiles').findOne({ userId })
+    const profile = await db.collection('user_profiles').findOne({ userId: user.id })
     
     if (!profile) {
       // Create default profile if none exists
       const defaultProfile: UserProfile = {
-        userId,
+        userId: user.id,
         preferredModel: 'gemini-flash-2.0',
         aiSettings: {
           temperature: 0.7,
@@ -73,12 +75,16 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const updates = await request.json()
-    const { userId, geminiApiKey, ...otherUpdates } = updates
-
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
+    const user = getUserFromRequest(request)
+    
+    if (!user) {
+      return NextResponse.json({ error: 'User not authenticated' }, { status: 401 })
     }
+
+    const updates = await request.json()
+    console.log('Profile update request for user:', user.id, 'Updates:', Object.keys(updates))
+    
+    const { geminiApiKey, _id, ...otherUpdates } = updates
 
     const db = await getDatabase()
     
@@ -90,14 +96,19 @@ export async function PUT(request: NextRequest) {
 
     // Encrypt API key if provided
     if (geminiApiKey && geminiApiKey !== '[CONFIGURED]') {
+      console.log('Encrypting API key, length:', geminiApiKey.length)
       updateData.geminiApiKey = encryptApiKey(geminiApiKey)
     }
 
+    console.log('Update data keys:', Object.keys(updateData))
+
     const result = await db.collection('user_profiles').updateOne(
-      { userId },
+      { userId: user.id },
       { $set: updateData },
       { upsert: true }
     )
+
+    console.log('Update result:', { matchedCount: result.matchedCount, upsertedCount: result.upsertedCount })
 
     if (result.matchedCount === 0 && result.upsertedCount === 0) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
@@ -112,17 +123,19 @@ export async function PUT(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const profileData = await request.json()
-    const { userId, geminiApiKey, ...otherData } = profileData
-
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
+    const user = getUserFromRequest(request)
+    
+    if (!user) {
+      return NextResponse.json({ error: 'User not authenticated' }, { status: 401 })
     }
+
+    const profileData = await request.json()
+    const { geminiApiKey, ...otherData } = profileData
 
     const db = await getDatabase()
     
     const newProfile: UserProfile = {
-      userId,
+      userId: user.id,
       preferredModel: 'gemini-flash-2.0',
       aiSettings: {
         temperature: 0.7,

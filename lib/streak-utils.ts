@@ -62,3 +62,5 @@ export function shouldResetStreak(lastActiveDate: string | undefined): boolean {
   // Reset streak if last active date was before yesterday
   return lastActiveDate < yesterday
 }
+
+
