@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
@@ -47,8 +47,13 @@ export function SidebarNav({ children }: SidebarNavProps) {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isClient, setIsClient] = useState(false)
   const pathname = usePathname()
   const { user, logout } = useAuth()
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const handleLogout = () => {
     logout()
@@ -125,43 +130,45 @@ export function SidebarNav({ children }: SidebarNavProps) {
 
       {/* User Menu */}
       <div className={`border-t border-sidebar-border p-6 ${isCollapsed ? 'px-4' : ''}`}>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-sm transition-all duration-200 ${
-                isCollapsed ? 'w-full justify-center px-3 sidebar-tooltip' : 'w-full'
-              }`}
-              title={isCollapsed ? `${user?.name || "User"} - ${user?.email}` : undefined}
-            >
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground">
-                <User className="h-4 w-4" />
-              </div>
-              {!isCollapsed && (
-                <div className="flex-1 text-left">
-                  <p className="text-sm font-medium text-sidebar-foreground">{user?.name || "User"}</p>
-                  <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+        {isClient && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-sm transition-all duration-200 ${
+                  isCollapsed ? 'w-full justify-center px-3 sidebar-tooltip' : 'w-full'
+                }`}
+                title={isCollapsed ? `${user?.name || "User"} - ${user?.email}` : undefined}
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground">
+                  <User className="h-4 w-4" />
                 </div>
-              )}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>{user?.name || "User"}</DropdownMenuLabel>
-            <DropdownMenuLabel className="text-xs text-muted-foreground">
-              {user?.email}
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
-              <Settings className="h-4 w-4 mr-2" />
-              AI Settings
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="text-destructive">
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+                {!isCollapsed && (
+                  <div className="flex-1 text-left">
+                    <p className="text-sm font-medium text-sidebar-foreground">{user?.name || "User"}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                  </div>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>{user?.name || "User"}</DropdownMenuLabel>
+              <DropdownMenuLabel className="text-xs text-muted-foreground">
+                {user?.email}
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
+                <Settings className="h-4 w-4 mr-2" />
+                AI Settings
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
     </div>
   )
@@ -177,22 +184,24 @@ export function SidebarNav({ children }: SidebarNavProps) {
         </div>
 
         {/* Mobile Sidebar */}
-        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-          <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="md:hidden fixed top-4 left-4 z-50 bg-card shadow-lg"
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-80 p-0 bg-sidebar border-sidebar-border">
-            <div className="mx-4 my-4 rounded-2xl floating-sidebar h-[calc(100vh-2rem)]">
-              <SidebarContent />
-            </div>
-          </SheetContent>
-        </Sheet>
+        {isClient && (
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="md:hidden fixed top-4 left-4 z-50 bg-card shadow-lg"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-80 p-0 bg-sidebar border-sidebar-border">
+              <div className="mx-4 my-4 rounded-2xl floating-sidebar h-[calc(100vh-2rem)]">
+                <SidebarContent />
+              </div>
+            </SheetContent>
+          </Sheet>
+        )}
 
         {/* Main Content */}
         <div className="flex flex-1 flex-col overflow-hidden">

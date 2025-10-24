@@ -20,7 +20,7 @@ import { Plus } from "lucide-react"
 import type { RecurrenceType } from "@/lib/recurring-utils"
 import { formatRecurrenceLabel } from "@/lib/recurring-utils"
 
-const CATEGORIES = ["Work", "Study", "Personal", "Health", "Review"]
+const CATEGORIES = ["Work", "Study", "Personal", "Health", "Review", "Exercise", "Meeting", "Project", "Learning", "Break", "Shopping", "Travel"]
 const RECURRING_OPTIONS: RecurrenceType[] = ["once", "daily", "weekly", "monthly", "yearly"]
 
 export function CreateTaskDialog() {

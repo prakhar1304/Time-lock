@@ -51,9 +51,14 @@ export function AIAssistant() {
   const [isLoading, setIsLoading] = useState(false)
   const [sessionId] = useState(`session_${Date.now()}`)
   const [userProfile, setUserProfile] = useState<any>(null)
+  const [isClient, setIsClient] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { tasks, addTask } = useTask()
   const { user } = useAuth()
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -85,6 +90,18 @@ export function AIAssistant() {
     e.preventDefault()
     if (!input.trim() || !user) return
 
+    // Check if API key is configured
+    if (!userProfile?.geminiApiKey) {
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: "🔑 **API Key Required**\n\nTo use the AI assistant, you need to configure your Gemini API key:\n\n1. Click on your profile menu (top right)\n2. Select 'AI Settings'\n3. Enter your Gemini API key\n4. Test the key to make sure it works\n\nYou can get a free API key from [Google AI Studio](https://aistudio.google.com/).",
+        timestamp: new Date(),
+      }
+      setMessages((prev) => [...prev, errorMessage])
+      return
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
@@ -111,6 +128,17 @@ export function AIAssistant() {
       const data = await response.json()
 
       if (data.error) {
+        // Handle specific error cases
+        if (data.error.includes('API key not configured')) {
+          const errorMessage: Message = {
+            id: (Date.now() + 2).toString(),
+            role: "assistant",
+            content: "🔑 **API Key Required**\n\nTo use the AI assistant, you need to configure your Gemini API key:\n\n1. Click on your profile menu (top right)\n2. Select 'AI Settings'\n3. Enter your Gemini API key\n4. Test the key to make sure it works\n\nYou can get a free API key from [Google AI Studio](https://aistudio.google.com/).",
+            timestamp: new Date(),
+          }
+          setMessages((prev) => [...prev, errorMessage])
+          return
+        }
         throw new Error(data.error)
       }
 
@@ -142,10 +170,25 @@ export function AIAssistant() {
       }
     } catch (error) {
       console.error("Error:", error)
+      
+      let errorContent = "Sorry, I encountered an error. Please try again."
+      
+      if (error instanceof Error) {
+        if (error.message.includes('API key')) {
+          errorContent = "🔑 **API Key Issue**\n\nThere's a problem with your Gemini API key. Please:\n\n1. Go to your profile settings\n2. Check your API key configuration\n3. Test the key to make sure it's valid\n4. Try again"
+        } else if (error.message.includes('quota')) {
+          errorContent = "📊 **API Quota Exceeded**\n\nYou've reached your API usage limit. Please check your Google AI Studio account or try again later."
+        } else if (error.message.includes('permission')) {
+          errorContent = "🚫 **Permission Error**\n\nYour API key doesn't have the required permissions. Please check your Google AI Studio settings."
+        } else if (error.message.includes('billing')) {
+          errorContent = "💳 **Billing Required**\n\nA billing account is required for this API. Please check your Google Cloud billing settings."
+        }
+      }
+      
       const errorMessage: Message = {
         id: (Date.now() + 2).toString(),
         role: "assistant",
-        content: "Sorry, I encountered an error. Please try again or check your AI settings.",
+        content: errorContent,
         timestamp: new Date(),
       }
       setMessages((prev) => [...prev, errorMessage])
@@ -182,14 +225,16 @@ export function AIAssistant() {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="gap-2 bg-purple-pastel hover:bg-purple-pastel/90 text-white fixed bottom-6 right-6 rounded-full shadow-lg">
-          <Sparkles className="h-5 w-5" />
-          <span className="hidden sm:inline">AI Assistant</span>
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] h-[700px] flex flex-col glass-card">
+    <>
+      {isClient && (
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button className="gap-2 bg-purple-pastel hover:bg-purple-pastel/90 text-white fixed bottom-6 right-6 rounded-full shadow-lg">
+              <Sparkles className="h-5 w-5" />
+              <span className="hidden sm:inline">AI Assistant</span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[600px] h-[700px] flex flex-col glass-card">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-purple-pastel" />
@@ -248,10 +293,10 @@ export function AIAssistant() {
 
         <form onSubmit={handleSendMessage} className="flex gap-2 pt-4 border-t border-border">
           <Input
-            placeholder="Ask me anything about your tasks and goals..."
+            placeholder={userProfile?.geminiApiKey ? "Ask me anything about your tasks and goals..." : "Configure your API key first to start chatting..."}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            disabled={isLoading}
+            disabled={isLoading || !userProfile?.geminiApiKey}
             className="flex-1"
           />
           <Button type="submit" size="sm" disabled={isLoading || !input.trim()}>
@@ -260,5 +305,7 @@ export function AIAssistant() {
         </form>
       </DialogContent>
     </Dialog>
+      )}
+    </>
   )
 }

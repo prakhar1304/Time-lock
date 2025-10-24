@@ -43,12 +43,22 @@ export function TimeBlockingGrid({ date, onTaskClick }: TimeBlockingGridProps) {
                       {tasksInSlot.map((task) => (
                         <div
                           key={task.id}
-                          className={`p-3 rounded-md border-2 ${getCategoryColor(task.category)} ${getTaskStatusColor(task)} transition-all hover:shadow-md`}
+                          className={`p-3 rounded-md border-2 ${getCategoryColor(task.category)} ${getTaskStatusColor(task)} transition-all hover:shadow-md cursor-pointer`}
+                          onClick={() => onTaskClick?.(task)}
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
-                              <h4 className="font-medium text-sm truncate">{task.title}</h4>
-                              <p className="text-xs opacity-75">{task.category}</p>
+                              <h4 className="font-medium text-sm truncate font-semibold">
+                                {task.title || 'Untitled Task'}
+                              </h4>
+                              <p className="text-xs font-medium opacity-80 mt-1">
+                                {task.category || 'Uncategorized'}
+                              </p>
+                              {task.time && (
+                                <p className="text-xs opacity-70 mt-1">
+                                  {task.time}
+                                </p>
+                              )}
                             </div>
                             <div className="flex gap-1 flex-shrink-0">
                               <button
@@ -56,16 +66,16 @@ export function TimeBlockingGrid({ date, onTaskClick }: TimeBlockingGridProps) {
                                   e.stopPropagation()
                                   toggleTaskComplete(task.id)
                                 }}
-                                className="p-1 hover:bg-black/10 rounded transition-colors"
+                                className="p-1 hover:bg-black/20 rounded transition-colors"
                               >
-                                <CheckCircle2 className={`h-4 w-4 ${task.completed ? "fill-current" : ""}`} />
+                                <CheckCircle2 className={`h-4 w-4 ${task.completed ? "fill-current text-green-600" : "text-gray-600"}`} />
                               </button>
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   deleteTask(task.id)
                                 }}
-                                className="p-1 hover:bg-red-100 rounded transition-colors text-red-600"
+                                className="p-1 hover:bg-red-200 rounded transition-colors text-red-600"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </button>

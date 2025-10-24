@@ -8,7 +8,7 @@ import { getCategoryColor } from "@/lib/calendar-utils"
 
 export function TaskList() {
   const { tasks, toggleTaskComplete, deleteTask } = useTask()
-
+  
   if (tasks.length === 0) {
     return (
       <Card>
@@ -56,15 +56,15 @@ export function TaskList() {
                 <h3
                   className={`font-medium ${task.completed ? "line-through text-muted-foreground" : "text-foreground"}`}
                 >
-                  {task.title}
+                  {task.title || 'Untitled Task'}
                 </h3>
                 <div className="mt-1 flex gap-3 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
-                    {task.time}
+                    {task.time || 'No time set'}
                   </span>
                   <span className="rounded-full bg-primary/10 px-2 py-0.5 text-primary font-medium">
-                    {task.recurring}
+                    {task.recurring || 'once'}
                   </span>
                   {task.dueDate && <span className="text-xs">Due: {new Date(task.dueDate).toLocaleDateString()}</span>}
                 </div>
